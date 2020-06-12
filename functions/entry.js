@@ -1,5 +1,5 @@
 const fs = require("fs");
-const TelegramBot = require("node-telegram-bot-api");
+const Telegraf = require("telegraf");
 
 const afterStartMsg = `در حال ارسال پیام ناشناس به ALI هستی.
 
@@ -21,33 +21,28 @@ const myID = "gp-32778-zP3UIoF";
 
 const token = "1228585907:AAETl_zF5stTFebOLog4xkErZU7YfHCARMk";
 
-const bot = new TelegramBot(token, { polling: true });
+const bot = new Telegraf(token);
 
 const sendingReadyIDs = {};
 
-bot.onText(/\/start (.+)/, (msg, match) => {
+bot.command("start", ({ message: startID, reply }) => {
   const chatId = msg.chat.id;
-  const startID = match[1];
   if (myID === startID) {
     sendingReadyIDs[chatId] = true;
-    bot.sendMessage(chatId, afterStartMsg);
+    reply(afterStartMsg);
   } else {
-    bot.sendMessage(chatId, OKMsg);
+    reply(OKMsg);
   }
-  return false;
 });
 
-bot.on("message", (msg) => {
-  const chatId = msg.chat.id;
-  const username = msg.chat.username;
-  const text = msg.text;
+bot.on("text", ({ message: text, reply, chat: { username } }) => {
   if (text.includes("/start")) return;
   if (sendingReadyIDs[chatId]) {
     fs.appendFileSync("msgs.txt", `${username}: ${text}\r\n`);
     sendingReadyIDs[chatId] = false;
-    bot.sendMessage(chatId, sendOK);
+    reply(sendOK);
   } else {
-    bot.sendMessage(chatId, nothingToDoMsg);
+    reply(nothingToDoMsg);
   }
 });
 

@@ -12,6 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "node-telegram-bot-api": "^0.50.0"
+    "netlify-lambda": "^1.6.3",
+    "node-telegram-bot-api": "^0.50.0",
+    "telegraf": "^3.38.0"
   }
 }
