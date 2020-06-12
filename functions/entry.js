@@ -52,6 +52,7 @@ bot.on("message", (msg) => {
 });
 
 exports.handler = async (event) => {
+  console.log(JSON.parse(event.body));
   await bot.processUpdate(JSON.parse(event.body));
   return { statusCode: 200, body: "" };
 };
