@@ -13,6 +13,7 @@ const endRequest = (requestNumber) => {
 
 const listenToCallback = (requestNumber, callback) => {
   eventEmitter.once(`end-${requestNumber}`, () => {
+    console.log(requestNumber, "ended");
     callback(null, {
       statusCode: 200,
       body: "",
