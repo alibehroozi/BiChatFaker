@@ -1,0 +1,17 @@
+{
+  "name": "bichatrobot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "functions/BiChat.js",
+  "scripts": {
+    "postinstall": "netlify-lambda install",
+    "buildNetlify": "netlify-lambda build functions",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "devNetlify": "netlify-lambda serve functions"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "node-telegram-bot-api": "^0.50.0"
+  }
+}
