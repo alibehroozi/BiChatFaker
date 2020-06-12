@@ -62,6 +62,7 @@ bot.on(
   "message",
   ({ chat: { id: chatId, username }, message_id: requestId, text }) => {
     if (text.includes("/start")) return;
+    console.log(text, "hi");
     if (sendingReadyIDs[chatId]) {
       sendingReadyIDs[chatId] = false;
       bot.sendMessage(chatId, sendOK);
