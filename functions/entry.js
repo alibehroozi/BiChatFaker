@@ -1,4 +1,5 @@
-const fs = require("fs");
+const { connect } = require("../store/mongoose");
+connect();
 const Telegraf = require("telegraf");
 
 const afterStartMsg = `در حال ارسال پیام ناشناس به ALI هستی.
@@ -38,7 +39,6 @@ bot.command("start", ({ message: startID, reply }) => {
 bot.on("text", ({ message: text, reply, chat: { username } }) => {
   if (text.includes("/start")) return;
   if (sendingReadyIDs[chatId]) {
-    fs.appendFileSync("msgs.txt", `${username}: ${text}\r\n`);
     sendingReadyIDs[chatId] = false;
     reply(sendOK);
   } else {
