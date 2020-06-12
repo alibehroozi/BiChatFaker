@@ -73,6 +73,7 @@ bot.on(
 
 exports.handler = (event, _, callback) => {
   const body = JSON.parse(event.body);
+  console.log(body);
   const updateId = body.update_id;
   listenToCallback(updateId, callback);
   bot.processUpdate(body);
