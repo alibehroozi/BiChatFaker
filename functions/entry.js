@@ -7,6 +7,7 @@ const { connect } = require("../store/mongoose");
 connect();
 
 const endRequest = (requestNumber) => {
+  console.log(requestNumber);
   eventEmitter.emit(`end-${requestNumber}`);
 };
 
