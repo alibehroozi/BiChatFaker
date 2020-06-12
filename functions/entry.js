@@ -1,6 +1,6 @@
+const TelegramBot = require("node-telegram-bot-api");
 const { connect } = require("../store/mongoose");
 connect();
-const Telegraf = require("telegraf");
 
 const afterStartMsg = `در حال ارسال پیام ناشناس به ALI هستی.
 
@@ -22,31 +22,36 @@ const myID = "gp-32778-zP3UIoF";
 
 const token = "1228585907:AAETl_zF5stTFebOLog4xkErZU7YfHCARMk";
 
-const bot = new Telegraf(token);
+const bot = new TelegramBot(token, { polling: true });
 
 const sendingReadyIDs = {};
 
-bot.command("start", ({ message: startID, reply }) => {
+bot.onText(/\/start (.+)/, (msg, match) => {
   const chatId = msg.chat.id;
+  const startID = match[1];
   if (myID === startID) {
     sendingReadyIDs[chatId] = true;
-    reply(afterStartMsg);
+    bot.sendMessage(chatId, afterStartMsg);
   } else {
-    reply(OKMsg);
+    bot.sendMessage(chatId, OKMsg);
   }
+  return false;
 });
 
-bot.on("text", ({ message: text, reply, chat: { username } }) => {
+bot.on("message", (msg) => {
+  const chatId = msg.chat.id;
+  const username = msg.chat.username;
+  const text = msg.text;
   if (text.includes("/start")) return;
   if (sendingReadyIDs[chatId]) {
     sendingReadyIDs[chatId] = false;
-    reply(sendOK);
+    bot.sendMessage(chatId, sendOK);
   } else {
-    reply(nothingToDoMsg);
+    bot.sendMessage(chatId, nothingToDoMsg);
   }
 });
 
 exports.handler = async (event) => {
-  await bot.handleUpdate(JSON.parse(event.body));
+  await bot.processUpdate(JSON.parse(event.body));
   return { statusCode: 200, body: "" };
 };
