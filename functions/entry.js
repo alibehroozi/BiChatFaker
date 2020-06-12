@@ -45,7 +45,7 @@ const sendingReadyIDs = {};
 
 bot.onText(
   /\/start (.+)/,
-  ({ chat: { id: chatId }, update_id: updateId }, match) => {
+  ({ chat: { id: chatId }, message_id: requestId }, match) => {
     const startID = match[1];
     if (myID === startID) {
       sendingReadyIDs[chatId] = true;
@@ -53,13 +53,13 @@ bot.onText(
     } else {
       bot.sendMessage(chatId, OKMsg);
     }
-    endRequest(updateId);
+    endRequest(requestId);
   }
 );
 
 bot.on(
   "message",
-  ({ chat: { id: chatId, username }, update_id: updateId, text }) => {
+  ({ chat: { id: chatId, username }, message_id: requestId, text }) => {
     if (text.includes("/start")) return;
     if (sendingReadyIDs[chatId]) {
       sendingReadyIDs[chatId] = false;
@@ -67,14 +67,14 @@ bot.on(
     } else {
       bot.sendMessage(chatId, nothingToDoMsg);
     }
-    endRequest(updateId);
+    endRequest(requestId);
   }
 );
 
 exports.handler = (event, _, callback) => {
   const body = JSON.parse(event.body);
   console.log(body);
-  const updateId = body.update_id;
-  listenToCallback(updateId, callback);
+  const requestId = body.message.message_id;
+  listenToCallback(requestId, callback);
   bot.processUpdate(body);
 };
