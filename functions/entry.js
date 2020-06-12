@@ -1,6 +1,23 @@
 const TelegramBot = require("node-telegram-bot-api");
+const EventEmitter = require("events");
+
+const eventEmitter = new EventEmitter();
+
 const { connect } = require("../store/mongoose");
 connect();
+
+const endRequest = (requestNumber) => {
+  eventEmitter.emit(`end-${requestNumber}`);
+};
+
+const listenToCallback = (requestNumber, callback) => {
+  eventEmitter.once(`end-${requestNumber}`, () => {
+    callback(null, {
+      statusCode: 200,
+      body: "",
+    });
+  });
+};
 
 const afterStartMsg = `در حال ارسال پیام ناشناس به ALI هستی.
 
@@ -26,35 +43,37 @@ const bot = new TelegramBot(token);
 
 const sendingReadyIDs = {};
 
-bot.onText(/\/start (.+)/, (msg, match) => {
-  const chatId = msg.chat.id;
-  const startID = match[1];
-  if (myID === startID) {
-    sendingReadyIDs[chatId] = true;
-    bot.sendMessage(chatId, afterStartMsg);
-  } else {
-    bot.sendMessage(chatId, OKMsg);
+bot.onText(
+  /\/start (.+)/,
+  ({ chat: { id: chatId }, update_id: updateId }, match) => {
+    const startID = match[1];
+    if (myID === startID) {
+      sendingReadyIDs[chatId] = true;
+      bot.sendMessage(chatId, afterStartMsg);
+    } else {
+      bot.sendMessage(chatId, OKMsg);
+    }
+    endRequest(updateId);
   }
-  return false;
-});
+);
 
-bot.on("message", (msg) => {
-  const chatId = msg.chat.id;
-  const username = msg.chat.username;
-  const text = msg.text;
-  if (text.includes("/start")) return;
-  if (sendingReadyIDs[chatId]) {
-    sendingReadyIDs[chatId] = false;
-    bot.sendMessage(chatId, sendOK);
-  } else {
-    bot.sendMessage(chatId, nothingToDoMsg);
+bot.on(
+  "message",
+  ({ chat: { id: chatId, username }, update_id: updateId, text }) => {
+    if (text.includes("/start")) return;
+    if (sendingReadyIDs[chatId]) {
+      sendingReadyIDs[chatId] = false;
+      bot.sendMessage(chatId, sendOK);
+    } else {
+      bot.sendMessage(chatId, nothingToDoMsg);
+    }
+    endRequest(updateId);
   }
-});
+);
 
-exports.handler = (event) => {
-  console.log(JSON.parse(event.body));
-  bot.processUpdate(JSON.parse(event.body));
-  setTimeout(() => {
-    console.log("s");
-  }, 2000);
+exports.handler = (event, _, callback) => {
+  const body = JSON.parse(event.body);
+  const updateId = body.update_id;
+  listenToCallback(updateId, callback);
+  bot.processUpdate(body);
 };
