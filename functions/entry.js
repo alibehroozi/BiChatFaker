@@ -51,8 +51,10 @@ bot.on("message", (msg) => {
   }
 });
 
-exports.handler = async (event) => {
+exports.handler = (event) => {
   console.log(JSON.parse(event.body));
-  await bot.processUpdate(JSON.parse(event.body));
-  return { statusCode: 200, body: "" };
+  bot.processUpdate(JSON.parse(event.body));
+  setTimeout(() => {
+    console.log("s");
+  }, 2000);
 };
