@@ -22,7 +22,7 @@ const myID = "gp-32778-zP3UIoF";
 
 const token = "1228585907:AAETl_zF5stTFebOLog4xkErZU7YfHCARMk";
 
-const bot = new TelegramBot(token, { polling: true });
+const bot = new TelegramBot(token);
 
 const sendingReadyIDs = {};
 
