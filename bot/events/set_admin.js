@@ -13,7 +13,7 @@ const onSetAdmin = async (
 ) => {
   const givenPassword = match[1];
   const givenKey = match[2];
-  const password = process.env.ADMIN_PASSWORD || "111";
+  const password = process.env.ADMIN_PASSWORD || "XXX";
   if (givenPassword === password) {
     const AdminModel = AdminModelGen(mongoConnection);
     await AdminModel.deleteMany({ chatId });

@@ -4,12 +4,10 @@ module.exports.connect = async () => {
   const options = {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    user: "bichat",
-    pass: "4Kziq9UHiv3RPgDm",
+    user: process.env.MONGO_USER || "XXX",
+    pass: process.env.MONGO_PASS || "XXX",
   };
-  const connection = await mongoose.createConnection(
-    "mongodb+srv://cluster0-wrr6v.mongodb.net/bichat",
-    options
-  );
+  const mongoURI = process.env.MONGO_URI || "mongodb+srv://XXX.mongodb.net/XXX";
+  const connection = await mongoose.createConnection(mongoURI, options);
   return connection;
 };
