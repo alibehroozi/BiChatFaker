@@ -97,12 +97,13 @@ bot.onText(
 bot.on(
   "message",
   async ({
-    chat: { id: chatId, username },
+    chat: { id: chatId },
     message_id: requestId,
     text,
     mongoConnection,
   }) => {
-    if (commands.filter((command) => text.includes(command)).length) return;
+    if (text && commands.filter((command) => text.includes(command)).length)
+      return;
     const SendReadyModel = SendReadyGen(mongoConnection);
     const userSendReady = await SendReadyModel.find({ chatId });
     if (userSendReady.length) {
