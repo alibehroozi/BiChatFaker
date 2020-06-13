@@ -56,12 +56,12 @@ bot.onText(
     const startID = match[1];
     const AdminModel = AdminModelGen(mongoConnection);
     const targetAdmin = await AdminModel.find({ key: startID });
-    if (targetAdmin) {
+    if (targetAdmin.length) {
       const SendReadyModel = SendReadyGen(mongoConnection);
       await SendReadyModel.deleteMany({ chatId });
       const sendReady = new SendReadyModel();
       sendReady.chatId = chatId;
-      sendReady.admin = targetAdmin.chatId;
+      sendReady.admin = targetAdmin[0].chatId;
       await sendReady.save();
       await bot.sendMessage(chatId, afterStartMsg);
     } else {
@@ -105,7 +105,7 @@ bot.on(
     if (commands.filter((command) => text.includes(command)).length) return;
     const SendReadyModel = SendReadyGen(mongoConnection);
     const userSendReady = await SendReadyModel.find({ chatId });
-    if (userSendReady) {
+    if (userSendReady.length) {
       await SendReadyModel.deleteMany({ chatId });
       await bot.sendMessage(chatId, sendOK);
     } else {
