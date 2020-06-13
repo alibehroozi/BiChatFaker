@@ -11,12 +11,11 @@ const endRequest = (requestNumber) => {
   eventEmitter.emit(`end-${requestNumber}`);
 };
 
-const listenToCallback = (requestNumber, callback) => {
-  eventEmitter.once(`end-${requestNumber}`, () => {
-    console.log(requestNumber, "ended");
-    callback(null, {
-      statusCode: 200,
-      body: "",
+const listenToCallback = (requestNumber) => {
+  return new Promise((resolve) => {
+    eventEmitter.once(`end-${requestNumber}`, () => {
+      console.log(requestNumber, "ended");
+      resolve();
     });
   });
 };
@@ -74,10 +73,14 @@ bot.on(
   }
 );
 
-exports.handler = (event, _, callback) => {
+exports.handler = async (event) => {
   const body = JSON.parse(event.body);
   console.log(body);
   const requestId = body.message.message_id;
-  listenToCallback(requestId, callback);
   bot.processUpdate(body);
+  await listenToCallback(requestId);
+  return {
+    statusCode: 200,
+    body: "",
+  };
 };
