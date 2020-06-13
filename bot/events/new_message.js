@@ -7,6 +7,7 @@ const { endRequest } = require("../../helpers");
 const sendReply = async ({
   eventEmitter,
   requestId,
+  username,
   mongoConnection,
   bot,
   chatId,
@@ -52,6 +53,7 @@ const onNewMessage = async ({
     return await sendReply({
       eventEmitter,
       requestId,
+      username,
       mongoConnection,
       bot,
       chatId,
