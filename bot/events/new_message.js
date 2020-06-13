@@ -31,7 +31,7 @@ const onNewMessage = async ({
   eventEmitter,
 }) => {
   if (text && commands.filter((command) => text.includes(command)).length)
-    return;
+    return endRequest(eventEmitter, requestId);
   if (text && reply_to_message)
     return await sendReply({
       mongoConnection,
