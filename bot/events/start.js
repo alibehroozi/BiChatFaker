@@ -23,7 +23,7 @@ const onStart = async (
     sendReady.chatId = chatId;
     sendReady.admin = targetAdmin[0].chatId;
     await sendReady.save();
-    await bot.sendMessage(chatId, afterStartMsg);
+    await bot.sendMessage(chatId, afterStartMsg(targetAdmin[0].name));
   } else {
     await bot.sendMessage(chatId, okMsg);
   }

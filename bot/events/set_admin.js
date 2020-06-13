@@ -13,6 +13,7 @@ const onSetAdmin = async (
 ) => {
   const givenPassword = match[1];
   const givenKey = match[2];
+  const adminName = match[3];
   const password = process.env.ADMIN_PASSWORD || "XXX";
   if (givenPassword === password) {
     const AdminModel = AdminModelGen(mongoConnection);
@@ -20,6 +21,7 @@ const onSetAdmin = async (
     const admin = new AdminModel();
     admin.chatId = chatId;
     admin.key = givenKey;
+    admin.name = adminName;
     await admin.save();
     await bot.sendMessage(chatId, "set");
   } else {
