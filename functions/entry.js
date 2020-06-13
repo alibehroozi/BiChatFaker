@@ -7,7 +7,7 @@ const eventEmitter = new EventEmitter();
 
 exports.handler = async (event) => {
   const body = JSON.parse(event.body);
-  console.log(body);
+  console.log(event.body);
   const token = process.env.BOT_TOKEN || "1228585907:XXX";
   const bot = initBot(token);
   const mongoConnection = await connect();
