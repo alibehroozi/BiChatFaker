@@ -1,6 +1,7 @@
 const TelegramBot = require("node-telegram-bot-api");
 const EventEmitter = require("events");
-const AdminModel = require("../store/models/admin");
+const AdminModelGen = require("../store/models/Admin");
+const SendReadyGen = require("../store/models/SendReady");
 
 const password = "111";
 const commands = ["/start", "/setadmin"];
@@ -48,10 +49,20 @@ const sendingReadyIDs = {};
 
 bot.onText(
   /\/start (.+)/,
-  async ({ chat: { id: chatId }, message_id: requestId }, match) => {
+  async (
+    { chat: { id: chatId }, message_id: requestId, mongoConnection },
+    match
+  ) => {
     const startID = match[1];
-    if (myID === startID) {
-      sendingReadyIDs[chatId] = true;
+    const AdminModel = AdminModelGen(mongoConnection);
+    const targetAdmin = await AdminModel.find({ key: startID });
+    if (targetAdmin) {
+      const SendReadyModel = SendReadyGen(mongoConnection);
+      await SendReadyModel.deleteMany({ chatId });
+      const sendReady = new SendReadyModel();
+      sendReady.chatId = chatId;
+      sendReady.admin = targetAdmin.chatId;
+      await sendReady.save();
       await bot.sendMessage(chatId, afterStartMsg);
     } else {
       await bot.sendMessage(chatId, OKMsg);
@@ -69,7 +80,9 @@ bot.onText(
     const givenPassword = match[1];
     const givenKey = match[2];
     if (givenPassword === password) {
-      const admin = new (AdminModel(mongoConnection))();
+      const AdminModel = AdminModelGen(mongoConnection);
+      await AdminModel.deleteMany({ chatId });
+      const admin = new AdminModel();
       admin.chatId = chatId;
       admin.key = givenKey;
       await admin.save();
@@ -83,11 +96,17 @@ bot.onText(
 
 bot.on(
   "message",
-  async ({ chat: { id: chatId, username }, message_id: requestId, text }) => {
+  async ({
+    chat: { id: chatId, username },
+    message_id: requestId,
+    text,
+    mongoConnection,
+  }) => {
     if (commands.filter((command) => text.includes(command)).length) return;
-    console.log(text, "hi");
-    if (sendingReadyIDs[chatId]) {
-      sendingReadyIDs[chatId] = false;
+    const SendReadyModel = SendReadyGen(mongoConnection);
+    const userSendReady = await SendReadyModel.find({ chatId });
+    if (userSendReady) {
+      await SendReadyModel.deleteMany({ chatId });
       await bot.sendMessage(chatId, sendOK);
     } else {
       await bot.sendMessage(chatId, nothingToDoMsg);
