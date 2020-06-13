@@ -17,7 +17,7 @@ const sendReply = async ({
   const admin = await AdminModel.find({ chatId });
   if (admin.length) {
     await bot.sendMessage(reply_to_message.chat.id, text, {
-      reply_to_message_id: reply_to_message.message.message_id,
+      reply_to_message_id: reply_to_message.message_id,
     });
   }
   endRequest(eventEmitter, requestId);
