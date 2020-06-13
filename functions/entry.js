@@ -46,13 +46,13 @@ const sendingReadyIDs = {};
 
 bot.onText(
   /\/start (.+)/,
-  ({ chat: { id: chatId }, message_id: requestId }, match) => {
+  async ({ chat: { id: chatId }, message_id: requestId }, match) => {
     const startID = match[1];
     if (myID === startID) {
       sendingReadyIDs[chatId] = true;
-      bot.sendMessage(chatId, afterStartMsg);
+      await bot.sendMessage(chatId, afterStartMsg);
     } else {
-      bot.sendMessage(chatId, OKMsg);
+      await bot.sendMessage(chatId, OKMsg);
     }
     endRequest(requestId);
   }
@@ -60,14 +60,14 @@ bot.onText(
 
 bot.on(
   "message",
-  ({ chat: { id: chatId, username }, message_id: requestId, text }) => {
+  async ({ chat: { id: chatId, username }, message_id: requestId, text }) => {
     if (text.includes("/start")) return;
     console.log(text, "hi");
     if (sendingReadyIDs[chatId]) {
       sendingReadyIDs[chatId] = false;
-      bot.sendMessage(chatId, sendOK);
+      await bot.sendMessage(chatId, sendOK);
     } else {
-      bot.sendMessage(chatId, nothingToDoMsg);
+      await bot.sendMessage(chatId, nothingToDoMsg);
     }
     endRequest(requestId);
   }
