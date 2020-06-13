@@ -108,6 +108,8 @@ bot.on(
     if (userSendReady.length) {
       await SendReadyModel.deleteMany({ chatId });
       await bot.sendMessage(chatId, sendOK);
+      const adminChatId = userSendReady[0].admin;
+      await bot.forwardMessage(adminChatId, chatId, requestId);
     } else {
       await bot.sendMessage(chatId, nothingToDoMsg);
     }
