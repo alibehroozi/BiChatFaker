@@ -36,7 +36,7 @@ const onNewMessage = async ({
   eventEmitter,
 }) => {
   if (text && commands.filter((command) => text.includes(command)).length)
-    return endRequest(eventEmitter, requestId);
+    return;
   if (reply_to_message)
     return await sendReply({
       eventEmitter,

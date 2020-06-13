@@ -4,10 +4,20 @@ const { afterStartMsg, okMsg } = require("../../constants/messages");
 const { endRequest } = require("../../helpers");
 
 const onStart = async (
-  { chat: { id: chatId }, mongoConnection, bot },
+  {
+    eventEmitter,
+    message_id: requestId,
+    chat: { id: chatId },
+    mongoConnection,
+    bot,
+  },
   match
 ) => {
-  const startID = match[1];
+  const startID = match[1].trim();
+  if (!startID.length) {
+    await bot.sendMessage(chatId, okMsg);
+    return endRequest(eventEmitter, requestId);
+  }
   const AdminModel = AdminModelGen(mongoConnection);
   const targetAdmin = await AdminModel.find({ key: startID });
   if (targetAdmin.length) {
@@ -21,6 +31,7 @@ const onStart = async (
   } else {
     await bot.sendMessage(chatId, okMsg);
   }
+  endRequest(eventEmitter, requestId);
 };
 
 module.exports = onStart;

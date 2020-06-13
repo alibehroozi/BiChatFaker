@@ -2,12 +2,20 @@ const { endRequest } = require("../../helpers");
 const AdminModelGen = require("../../store/models/Admin");
 
 const onSetAdmin = async (
-  { chat: { id: chatId }, mongoConnection, bot },
+  {
+    eventEmitter,
+    message_id: requestId,
+    chat: { id: chatId },
+    mongoConnection,
+    bot,
+  },
   match
 ) => {
-  const givenPassword = match[1];
-  const givenKey = match[2];
-  const adminName = match[3];
+  const matches = match[1].split(" ");
+  if (matches.length !== 3) return endRequest(eventEmitter, requestId);
+  const givenPassword = matches[0];
+  const givenKey = matches[1];
+  const adminName = matches[2];
   const password = process.env.ADMIN_PASSWORD || "XXX";
   if (givenPassword === password) {
     const AdminModel = AdminModelGen(mongoConnection);
