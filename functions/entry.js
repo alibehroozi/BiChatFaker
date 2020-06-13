@@ -77,7 +77,9 @@ exports.handler = async (event) => {
   const body = JSON.parse(event.body);
   console.log(body);
   const requestId = body.message.message_id;
-  bot.processUpdate(body);
+  setTimeout(() => {
+    bot.processUpdate(body);
+  }, 0);
   await listenToCallback(requestId);
   return {
     statusCode: 200,
