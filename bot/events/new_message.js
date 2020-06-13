@@ -5,6 +5,8 @@ const commands = require("../../constants/commands");
 const { endRequest } = require("../../helpers");
 
 const sendReply = async ({
+  eventEmitter,
+  requestId,
   mongoConnection,
   bot,
   chatId,
@@ -18,6 +20,7 @@ const sendReply = async ({
       reply_to_message_id: reply_to_message.message.message_id,
     });
   }
+  endRequest(eventEmitter, requestId);
 };
 
 const onNewMessage = async ({
@@ -34,6 +37,8 @@ const onNewMessage = async ({
     return endRequest(eventEmitter, requestId);
   if (text && reply_to_message)
     return await sendReply({
+      eventEmitter,
+      requestId,
       mongoConnection,
       bot,
       chatId,
