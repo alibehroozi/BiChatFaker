@@ -5,7 +5,6 @@ module.exports.connect = async () => {
   const options = {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useMongoClient: true,
     user: "bichat",
     pass: "4Kziq9UHiv3RPgDm",
   };
