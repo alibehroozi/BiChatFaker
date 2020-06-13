@@ -75,7 +75,7 @@ bot.on(
 exports.handler = async (event) => {
   const body = JSON.parse(event.body);
   console.log(body);
-  connect();
+  await connect();
   const requestId = body.message.message_id;
   setTimeout(() => bot.processUpdate(body), 0);
   await listenToCallback(requestId);

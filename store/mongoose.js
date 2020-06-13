@@ -9,7 +9,7 @@ module.exports.connect = async () => {
     user: "bichat",
     pass: "4Kziq9UHiv3RPgDm",
   };
-  const conn = mongoose.createConnection(
+  const conn = await mongoose.createConnection(
     "mongodb+srv://cluster0-wrr6v.mongodb.net/bichat",
     options
   );
