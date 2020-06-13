@@ -4,33 +4,9 @@ const { nothingToDoMsg, sendOK } = require("../../constants/messages");
 const commands = require("../../constants/commands");
 const { endRequest } = require("../../helpers");
 
-const sendReply = async ({
-  eventEmitter,
-  requestId,
-  mongoConnection,
-  bot,
-  chatId,
-  text,
-  reply_to_message,
-}) => {
-  const AdminModel = AdminModelGen(mongoConnection);
-  const admin = await AdminModel.find({ chatId });
-  if (admin.length && text) {
-    await bot.sendMessage(reply_to_message.chat.id, text, {
-      reply_to_message_id: reply_to_message.message_id,
-    });
-    await bot.sendMessage(chatId, sendOK);
-  } else {
-    await bot.forwardMessage(reply_to_message.chat.id, chatId, requestId);
-    await bot.sendMessage(chatId, sendOK);
-  }
-  endRequest(eventEmitter, requestId);
-};
-
 const onNewMessage = async ({
   chat: { id: chatId },
   from: { username },
-  reply_to_message,
   message_id: requestId,
   text,
   mongoConnection,
@@ -39,16 +15,6 @@ const onNewMessage = async ({
 }) => {
   if (text && commands.filter((command) => text.includes(command)).length)
     return;
-  if (reply_to_message)
-    return await sendReply({
-      eventEmitter,
-      requestId,
-      mongoConnection,
-      bot,
-      chatId,
-      text,
-      reply_to_message,
-    });
   const SendReadyModel = SendReadyGen(mongoConnection);
   const userSendReady = await SendReadyModel.find({ chatId });
   if (userSendReady.length) {
