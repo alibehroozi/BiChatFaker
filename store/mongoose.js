@@ -19,5 +19,5 @@ module.exports.connect = async () => {
   const Admin = conn.model("Admin", AdminSchema);
   const admin = new Admin();
   admin.chatId = "hi";
-  admin.save();
+  await admin.save();
 };
