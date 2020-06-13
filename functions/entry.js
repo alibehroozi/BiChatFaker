@@ -1,6 +1,9 @@
 const TelegramBot = require("node-telegram-bot-api");
 const EventEmitter = require("events");
+const AdminModel = require("../store/models/admin");
 
+const password = "111";
+const commands = ["/start", "/setadmin"];
 const eventEmitter = new EventEmitter();
 
 const { connect } = require("../store/mongoose");
@@ -57,10 +60,31 @@ bot.onText(
   }
 );
 
+bot.onText(
+  /\/setadmin (.+) (.+)/,
+  async (
+    { chat: { id: chatId }, message_id: requestId, mongoConnection },
+    match
+  ) => {
+    const givenPassword = match[1];
+    const givenKey = match[2];
+    if (givenPassword === password) {
+      const admin = new (AdminModel(mongoConnection))();
+      admin.chatId = chatId;
+      admin.key = givenKey;
+      await admin.save();
+      await bot.sendMessage(chatId, "set");
+    } else {
+      await bot.sendMessage(chatId, "what?");
+    }
+    endRequest(requestId);
+  }
+);
+
 bot.on(
   "message",
   async ({ chat: { id: chatId, username }, message_id: requestId, text }) => {
-    if (text.includes("/start")) return;
+    if (commands.filter((command) => text.includes(command)).length) return;
     console.log(text, "hi");
     if (sendingReadyIDs[chatId]) {
       sendingReadyIDs[chatId] = false;
@@ -75,7 +99,8 @@ bot.on(
 exports.handler = async (event) => {
   const body = JSON.parse(event.body);
   console.log(body);
-  await connect();
+  const mongoConnection = await connect();
+  body.message.mongoConnection = mongoConnection;
   const requestId = body.message.message_id;
   setTimeout(() => bot.processUpdate(body), 0);
   await listenToCallback(requestId);
