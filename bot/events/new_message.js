@@ -49,35 +49,44 @@ const onNewMessage = async ({
 }) => {
   if (text && commands.filter((command) => text.includes(command)).length)
     return;
-  if (reply_to_message)
-    return await sendReply({
-      eventEmitter,
-      requestId,
-      username,
-      mongoConnection,
-      bot,
-      chatId,
-      text,
-      reply_to_message,
-    });
-  const SendReadyModel = SendReadyGen(mongoConnection);
-  const userSendReady = await SendReadyModel.find({ chatId });
-  if (userSendReady.length) {
-    await SendReadyModel.deleteMany({ chatId });
-    await bot.sendMessage(chatId, sendOK);
-    const adminChatId = userSendReady[0].admin;
-    const { message_id } = await bot.forwardMessage(
-      adminChatId,
-      chatId,
-      requestId
-    );
-    await bot.sendMessage(adminChatId, `${chatId} ${requestId} @${username}`, {
-      reply_to_message_id: message_id,
-    });
-  } else {
-    await bot.sendMessage(chatId, nothingToDoMsg);
+  try {
+    if (reply_to_message)
+      return await sendReply({
+        eventEmitter,
+        requestId,
+        username,
+        mongoConnection,
+        bot,
+        chatId,
+        text,
+        reply_to_message,
+      });
+    const SendReadyModel = SendReadyGen(mongoConnection);
+    const userSendReady = await SendReadyModel.find({ chatId });
+    if (userSendReady.length) {
+      await SendReadyModel.deleteMany({ chatId });
+      await bot.sendMessage(chatId, sendOK);
+      const adminChatId = userSendReady[0].admin;
+      const { message_id } = await bot.forwardMessage(
+        adminChatId,
+        chatId,
+        requestId
+      );
+      await bot.sendMessage(
+        adminChatId,
+        `${chatId} ${requestId} @${username}`,
+        {
+          reply_to_message_id: message_id,
+        }
+      );
+    } else {
+      await bot.sendMessage(chatId, nothingToDoMsg);
+    }
+  } catch (error) {
+    console.log(error);
+  } finally {
+    endRequest(eventEmitter, requestId);
   }
-  endRequest(eventEmitter, requestId);
 };
 
 module.exports = onNewMessage;
