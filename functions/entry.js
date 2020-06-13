@@ -16,7 +16,7 @@ exports.handler = async (event) => {
   body.message.eventEmitter = eventEmitter;
   const requestId = body.message.message_id;
   setTimeout(() => bot.processUpdate(body), 0);
-  await listenToCallback(requestId);
+  await listenToCallback(eventEmitter, requestId);
   return {
     statusCode: 200,
     body: "",
