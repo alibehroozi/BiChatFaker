@@ -4,7 +4,6 @@ const EventEmitter = require("events");
 const eventEmitter = new EventEmitter();
 
 const { connect } = require("../store/mongoose");
-connect();
 
 const endRequest = (requestNumber) => {
   console.log(requestNumber);
@@ -76,10 +75,9 @@ bot.on(
 exports.handler = async (event) => {
   const body = JSON.parse(event.body);
   console.log(body);
+  connect();
   const requestId = body.message.message_id;
-  setTimeout(() => {
-    bot.processUpdate(body);
-  }, 0);
+  setTimeout(() => bot.processUpdate(body), 0);
   await listenToCallback(requestId);
   return {
     statusCode: 200,

@@ -5,10 +5,16 @@ module.exports.connect = async () => {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   };
-  await mongoose.connect(
+  const conn = mongoose.createConnection(
     "mongodb+srv://bichat:4Kziq9UHiv3RPgDm@cluster0-wrr6v.mongodb.net/bichat",
     options
   );
-  const db = mongoose.connection;
-  db.on("error", console.error.bind(console, "MongoDB connection error:"));
+  console.log("connected");
+  const AdminSchema = new Schema({
+    chatId: String,
+  });
+  const Admin = conn.model("Admin", AdminSchema);
+  const admin = new Admin();
+  admin.chatId = "hi";
+  admin.save();
 };
