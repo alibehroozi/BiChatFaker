@@ -19,8 +19,10 @@ const sendReply = async ({
     await bot.sendMessage(reply_to_message.chat.id, text, {
       reply_to_message_id: reply_to_message.message_id,
     });
+    await bot.sendMessage(chatId, sendOK);
   } else {
     await bot.forwardMessage(reply_to_message.chat.id, chatId, requestId);
+    await bot.sendMessage(chatId, sendOK);
   }
   endRequest(eventEmitter, requestId);
 };
