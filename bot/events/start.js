@@ -4,13 +4,7 @@ const { afterStartMsg, okMsg } = require("../../constants/messages");
 const { endRequest } = require("../../helpers");
 
 const onStart = async (
-  {
-    chat: { id: chatId },
-    message_id: requestId,
-    mongoConnection,
-    bot,
-    eventEmitter,
-  },
+  { chat: { id: chatId }, mongoConnection, bot },
   match
 ) => {
   const startID = match[1];
@@ -27,7 +21,6 @@ const onStart = async (
   } else {
     await bot.sendMessage(chatId, okMsg);
   }
-  endRequest(eventEmitter, requestId);
 };
 
 module.exports = onStart;

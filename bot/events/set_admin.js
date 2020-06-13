@@ -2,13 +2,7 @@ const { endRequest } = require("../../helpers");
 const AdminModelGen = require("../../store/models/Admin");
 
 const onSetAdmin = async (
-  {
-    chat: { id: chatId },
-    message_id: requestId,
-    mongoConnection,
-    bot,
-    eventEmitter,
-  },
+  { chat: { id: chatId }, mongoConnection, bot },
   match
 ) => {
   const givenPassword = match[1];
@@ -27,7 +21,6 @@ const onSetAdmin = async (
   } else {
     await bot.sendMessage(chatId, "what?");
   }
-  endRequest(eventEmitter, requestId);
 };
 
 module.exports = onSetAdmin;
