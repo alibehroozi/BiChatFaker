@@ -14,7 +14,7 @@ const sendReply = async ({
   reply_to_message,
 }) => {
   const AdminModel = AdminModelGen(mongoConnection);
-  const admin = AdminModel.find({ chatId });
+  const admin = await AdminModel.find({ chatId });
   if (admin.length) {
     await bot.sendMessage(reply_to_message.chat.id, text, {
       reply_to_message_id: reply_to_message.message.message_id,
