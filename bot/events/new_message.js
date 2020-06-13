@@ -5,6 +5,7 @@ const { endRequest } = require("../../helpers");
 
 const onNewMessage = async ({
   chat: { id: chatId },
+  from: { username },
   message_id: requestId,
   text,
   mongoConnection,
@@ -19,7 +20,14 @@ const onNewMessage = async ({
     await SendReadyModel.deleteMany({ chatId });
     await bot.sendMessage(chatId, sendOK);
     const adminChatId = userSendReady[0].admin;
-    await bot.forwardMessage(adminChatId, chatId, requestId);
+    const { message_id } = await bot.forwardMessage(
+      adminChatId,
+      chatId,
+      requestId
+    );
+    await bot.sendMessage(adminChatId, `@${username}`, {
+      reply_to_message_id: message_id,
+    });
   } else {
     await bot.sendMessage(chatId, nothingToDoMsg);
   }
