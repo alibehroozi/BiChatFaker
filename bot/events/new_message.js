@@ -16,14 +16,10 @@ const sendReply = async ({
   const AdminModel = AdminModelGen(mongoConnection);
   const admin = await AdminModel.find({ chatId });
   if (admin.length && text) {
-    const messageIdOrigin = reply_to_message.text.split(" ")[0];
-    await bot.sendMessage(
-      reply_to_message.forward_from.id,
-      `${chatId}\r\n${text}`,
-      {
-        reply_to_message_id: messageIdOrigin,
-      }
-    );
+    const [chatIdOrigin, messageIdOrigin] = reply_to_message.text.split(" ");
+    await bot.sendMessage(chatIdOrigin, `${chatId}\r\n${text}`, {
+      reply_to_message_id: messageIdOrigin,
+    });
     await bot.sendMessage(chatId, sendOK);
   } else {
     const adminChatId = reply_to_message.text.split(" ")[0];
@@ -32,7 +28,7 @@ const sendReply = async ({
       chatId,
       requestId
     );
-    await bot.sendMessage(adminChatId, `${requestId} @${username}`, {
+    await bot.sendMessage(adminChatId, `${chatId} ${requestId} @${username}`, {
       reply_to_message_id: message_id,
     });
     await bot.sendMessage(chatId, sendOK);
@@ -73,7 +69,7 @@ const onNewMessage = async ({
       chatId,
       requestId
     );
-    await bot.sendMessage(adminChatId, `${requestId} @${username}`, {
+    await bot.sendMessage(adminChatId, `${chatId} ${requestId} @${username}`, {
       reply_to_message_id: message_id,
     });
   } else {
