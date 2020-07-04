@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+let mongoCache;
+
 module.exports.connect = async () => {
   const options = {
     useNewUrlParser: true,
@@ -9,6 +11,8 @@ module.exports.connect = async () => {
     pass: process.env.MONGO_PASS || "XXX",
   };
   const mongoURI = process.env.MONGO_URI || "mongodb+srv://XXX.mongodb.net/XXX";
-  const connection = await mongoose.createConnection(mongoURI, options);
+  const connection =
+    mongoCache || (await mongoose.createConnection(mongoURI, options));
+  mongoCache = connection;
   return connection;
 };
